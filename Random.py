@@ -3,19 +3,9 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# --------------------------
-# Step 0: Load trained model
-# --------------------------
-# Make sure you saved your RandomForest model:
-# with open('taxi_rf_model.pkl', 'wb') as f:
-#     pickle.dump(model, f)
 
-with open('taxi_rf_model.pkl', 'rb') as f:
-    model = pickle.load(f)
 
-# --------------------------
-# Step 1: Load Dataset (for reference)
-# --------------------------
+
 df = pd.read_csv(r'h:\SpeclizationTraingClass\taxi_trip_pricingR.csv')
 
 st.set_page_config(page_title="Taxi Trip Price Prediction", page_icon="🚖", layout="centered")
