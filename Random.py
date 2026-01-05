@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# -----------------------------
-# Page config
-# -----------------------------
+# -------------------------------------------------
+# Page configuration
+# -------------------------------------------------
 st.set_page_config(
     page_title="Taxi Trip Price Prediction",
     page_icon="🚖",
@@ -14,19 +14,19 @@ st.set_page_config(
 st.title("🚖 Taxi Trip Price Prediction")
 st.write("Enter trip details to predict the taxi fare")
 
-# -----------------------------
+# -------------------------------------------------
 # Load model (JOBLIB ONLY)
-# -----------------------------
+# -------------------------------------------------
 model = joblib.load("taxi_rf_model_joblib.pkl")
 
-# -----------------------------
+# -------------------------------------------------
 # Load dataset (RELATIVE PATH ONLY)
-# -----------------------------
+# -------------------------------------------------
 df = pd.read_csv("taxi_trip_pricingR.csv")
 
-# -----------------------------
-# Input fields
-# -----------------------------
+# -------------------------------------------------
+# Input section
+# -------------------------------------------------
 st.header("Trip Details")
 
 trip_distance = st.number_input(
@@ -68,27 +68,27 @@ per_minute_rate = st.number_input(
 
 time_of_day = st.selectbox(
     "Time of Day",
-    sorted(df["Time_of_Day"].unique())
+    sorted(df["Time_of_Day"].dropna().astype(str).unique())
 )
 
 day_of_week = st.selectbox(
     "Day of Week",
-    sorted(df["Day_of_Week"].unique())
+    sorted(df["Day_of_Week"].dropna().astype(str).unique())
 )
 
 traffic = st.selectbox(
     "Traffic Conditions",
-    sorted(df["Traffic_Conditions"].unique())
+    sorted(df["Traffic_Conditions"].dropna().astype(str).unique())
 )
 
 weather = st.selectbox(
     "Weather",
-    sorted(df["Weather"].unique())
+    sorted(df["Weather"].dropna().astype(str).unique())
 )
 
-# -----------------------------
-# Prepare input
-# -----------------------------
+# -------------------------------------------------
+# Prepare input data
+# -------------------------------------------------
 input_data = {
     "Trip_Distance_km": trip_distance,
     "Passenger_Count": passenger_count,
@@ -104,18 +104,24 @@ input_data = {
 
 input_df = pd.DataFrame([input_data])
 
-# One-hot encode
+# One-hot encode categorical columns
 input_df = pd.get_dummies(input_df)
 
-# Align columns with training model
+# Align with training features
 input_df = input_df.reindex(
     columns=model.feature_names_in_,
     fill_value=0
 )
 
-# -----------------------------
+# -------------------------------------------------
 # Prediction
-# -----------------------------
+# -------------------------------------------------
 if st.button("Predict Trip Price"):
     prediction = model.predict(input_df)[0]
     st.success(f"💰 Predicted Trip Price: ₹ {prediction:.2f}")
+
+# -------------------------------------------------
+# Optional: Show dataset
+# -------------------------------------------------
+if st.checkbox("Show dataset preview"):
+    st.dataframe(df.head())
